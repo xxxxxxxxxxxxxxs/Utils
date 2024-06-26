@@ -11,7 +11,6 @@ local QEfly = true
 local iyflyspeed = 1
 local vehicleflyspeed = 1
 local IYMouse = Players.LocalPlayer:GetMouse()
-local warps = {}
 
 local function getRoot(char)
     local rootPart = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
@@ -112,35 +111,14 @@ local function NOFLY()
     pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
 end
 
-local function toggleNoclip()
-    local character = Players.LocalPlayer.Character
-    if character then
-        for _, v in pairs(character:GetDescendants()) do
-            if v:IsA("BasePart") and v.CanCollide then
-                v.CanCollide = false
-            end
+local function gotoPlayer(targetPlayer)
+    local character = targetPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local targetPosition = character.HumanoidRootPart.Position
+        local playerCharacter = Players.LocalPlayer.Character
+        if playerCharacter and playerCharacter:FindFirstChild("HumanoidRootPart") then
+            playerCharacter.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 5, 0))
         end
-    end
-end
-
-local function gotoPlayer(playerName)
-    local player = Players:FindFirstChild(playerName)
-    if player and player.Character and getRoot(player.Character) then
-        local targetPos = getRoot(player.Character).Position
-        getRoot(Players.LocalPlayer.Character).CFrame = CFrame.new(targetPos)
-    end
-end
-
-local function setWarp(warpName)
-    local char = Players.LocalPlayer.Character
-    if char and getRoot(char) then
-        warps[warpName] = getRoot(char).CFrame
-    end
-end
-
-local function gotoWarp(warpName)
-    if warps[warpName] then
-        getRoot(Players.LocalPlayer.Character).CFrame = warps[warpName]
     end
 end
 
@@ -157,14 +135,32 @@ module[1] = {
 
 module[2] = {
     Type = "Button",
-    Args = {"Toggle Noclip", function(Self)
-        toggleNoclip()
+    Args = {"Noclip", function(Self)
+        local player = Players.LocalPlayer
+        local character = player.Character
+        if character then
+            for _, v in pairs(character:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = not v.CanCollide
+                end
+            end
+        end
     end}
 }
 
-module[3] = {
-    Type = "TextBox",
-    Args = {"Goto Player", function(Self, playerName)
-        gotoPlayer(playerName)
-    end}
-}
+local playerCount = 3
+for _, player in pairs(Players:GetPlayers()) do
+    if player ~= Players.LocalPlayer then
+        module[playerCount] = {
+            Type = "Button",
+            Args = {player.Name, function(Self)
+                gotoPlayer(player)
+            end}
+        }
+        playerCount = playerCount + 1
+    end
+end
+
+_G.Modules[#_G.Modules + 1] = module
+return module
+
