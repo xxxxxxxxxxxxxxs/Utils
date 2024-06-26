@@ -148,31 +148,6 @@ module[2] = {
     end}
 }
 
-local playerContainer = Instance.new("Frame")
-playerContainer.Name = "PlayerContainer"
-playerContainer.Size = UDim2.new(0, 400, 0, 400)
-playerContainer.Position = UDim2.new(0, 0, 1, 0)
-
-local UIGridLayout = Instance.new("UIGridLayout")
-UIGridLayout.CellSize = UDim2.new(0, 100, 0, 100)
-UIGridLayout.Parent = playerContainer
-
-local playerCount = 3
-for _, player in pairs(Players:GetPlayers()) do
-    if player ~= Players.LocalPlayer then
-        local playerButton = Instance.new("ImageButton")
-        playerButton.Name = player.Name
-        playerButton.Size = UDim2.new(0, 100, 0, 100)
-        playerButton.Image = getUserPFP(player.UserId)
-        playerButton.MouseButton1Click:Connect(function()
-            gotoPlayer(player)
-        end)
-        
-        local playerLabel = Instance.new("TextLabel")
-        playerLabel.Text = player.Name
-        playerLabel.Size = UDim2.new(1, 0, 0, 20)
-        playerLabel.Position = UDim2.new(0, 0, 1,)
-
 local playerCount = 3
 for _, player in pairs(Players:GetPlayers()) do
     if player ~= Players.LocalPlayer then
@@ -188,4 +163,3 @@ end
 
 _G.Modules[#_G.Modules + 1] = module
 return module
-
