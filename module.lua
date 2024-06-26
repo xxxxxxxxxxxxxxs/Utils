@@ -1,22 +1,12 @@
 local module = {}
 
-module["Name"] = "Custom module test"
+module["Name"] = "Fly by xs"
 
-module[1] = {
-    Type = "Text",
-    Args = {"Hello!"}
-}
-
-module[2] = {
-    Type = "Button",
-    Args = {"Say hi", function(Self)
-        print("Hi!")
-    end}
-}
 
 local flying = false
 local bodyVelocity
 local bodyGyro
+local UserInputService = game:GetService("UserInputService")
 
 local function startFlying(character)
     local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
@@ -24,7 +14,6 @@ local function startFlying(character)
         bodyVelocity = Instance.new("BodyVelocity")
         bodyVelocity.Velocity = Vector3.new(0, 0, 0)
         bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
-        bodyVelocity.P = 1250
         bodyVelocity.Parent = humanoidRootPart
 
         bodyGyro = Instance.new("BodyGyro")
@@ -46,6 +35,38 @@ local function stopFlying()
     end
 end
 
+local function onInputBegan(input, gameProcessed)
+    if gameProcessed then return end
+    if not flying then return end
+
+    local character = game.Players.LocalPlayer.Character
+    if not character then return end
+
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
+
+    if input.KeyCode == Enum.KeyCode.W then
+        bodyVelocity.Velocity = humanoidRootPart.CFrame.LookVector * 50
+    elseif input.KeyCode == Enum.KeyCode.S then
+        bodyVelocity.Velocity = -humanoidRootPart.CFrame.LookVector * 50
+    elseif input.KeyCode == Enum.KeyCode.A then
+        bodyVelocity.Velocity = -humanoidRootPart.CFrame.RightVector * 50
+    elseif input.KeyCode == Enum.KeyCode.D then
+        bodyVelocity.Velocity = humanoidRootPart.CFrame.RightVector * 50
+    elseif input.KeyCode == Enum.KeyCode.Space then
+        bodyVelocity.Velocity = Vector3.new(0, 50, 0)
+    elseif input.KeyCode == Enum.KeyCode.LeftControl then
+        bodyVelocity.Velocity = Vector3.new(0, -50, 0)
+    end
+end
+
+local function onInputEnded(input, gameProcessed)
+    if gameProcessed then return end
+    if not flying then return end
+
+    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+end
+
 local function toggleFly(player)
     local character = player.Character
     if not character then return end
@@ -53,6 +74,8 @@ local function toggleFly(player)
     flying = not flying
     if flying then
         startFlying(character)
+        UserInputService.InputBegan:Connect(onInputBegan)
+        UserInputService.InputEnded:Connect(onInputEnded)
     else
         stopFlying()
     end
