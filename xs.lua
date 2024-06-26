@@ -1,7 +1,6 @@
 local module = {}
-local module = {}
 
-module["Name"] = "Fly"
+module["Name"] = "Xs's Utilities"
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -12,6 +11,7 @@ local QEfly = true
 local iyflyspeed = 1
 local vehicleflyspeed = 1
 local IYMouse = Players.LocalPlayer:GetMouse()
+local warps = {}
 
 local function getRoot(char)
     local rootPart = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
@@ -112,6 +112,38 @@ local function NOFLY()
     pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
 end
 
+local function toggleNoclip()
+    local character = Players.LocalPlayer.Character
+    if character then
+        for _, v in pairs(character:GetDescendants()) do
+            if v:IsA("BasePart") and v.CanCollide then
+                v.CanCollide = false
+            end
+        end
+    end
+end
+
+local function gotoPlayer(playerName)
+    local player = Players:FindFirstChild(playerName)
+    if player and player.Character and getRoot(player.Character) then
+        local targetPos = getRoot(player.Character).Position
+        getRoot(Players.LocalPlayer.Character).CFrame = CFrame.new(targetPos)
+    end
+end
+
+local function setWarp(warpName)
+    local char = Players.LocalPlayer.Character
+    if char and getRoot(char) then
+        warps[warpName] = getRoot(char).CFrame
+    end
+end
+
+local function gotoWarp(warpName)
+    if warps[warpName] then
+        getRoot(Players.LocalPlayer.Character).CFrame = warps[warpName]
+    end
+end
+
 module[1] = {
     Type = "Button",
     Args = {"Toggle Fly", function(Self)
@@ -123,5 +155,16 @@ module[1] = {
     end}
 }
 
-_G.Modules[#_G.Modules + 1] = module
-return module
+module[2] = {
+    Type = "Button",
+    Args = {"Toggle Noclip", function(Self)
+        toggleNoclip()
+    end}
+}
+
+module[3] = {
+    Type = "TextBox",
+    Args = {"Goto Player", function(Self, playerName)
+        gotoPlayer(playerName)
+    end}
+}
