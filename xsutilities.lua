@@ -5,6 +5,7 @@ module["Name"] = "Xs's Utilities"
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
 
 local FLYING = false
 local QEfly = true
@@ -111,6 +112,21 @@ local function NOFLY()
     pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
 end
 
+local noclip = false
+RunService.Stepped:Connect(function()
+    if noclip then
+        for _, part in pairs(Players.LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") and part.CanCollide then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+local function toggleNoclip()
+    noclip = not noclip
+end
+
 local function gotoPlayer(targetPlayer)
     local character = targetPlayer.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
@@ -120,6 +136,10 @@ local function gotoPlayer(targetPlayer)
             playerCharacter.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 5, 0))
         end
     end
+end
+
+local function getUserPFP(userId)
+    return "https://www.roblox.com/headshot-thumbnail/image?userId=" .. userId .. "&width=420&height=420&format=png"
 end
 
 module[1] = {
@@ -136,30 +156,32 @@ module[1] = {
 module[2] = {
     Type = "Button",
     Args = {"Noclip", function(Self)
-        local player = Players.LocalPlayer
-        local character = player.Character
-        if character then
-            for _, v in pairs(character:GetDescendants()) do
-                if v:IsA("BasePart") then
-                    v.CanCollide = not v.CanCollide
-                end
-            end
-        end
+        toggleNoclip()
     end}
 }
 
-local playerCount = 3
+local playerContainer = Instance.new("Frame")
+playerContainer.Name = "PlayerContainer"
+playerContainer.Size = UDim2.new(0, 400, 0, 400)
+playerContainer.Position = UDim2.new(0, 0, 1, -400)
+
+local UIGridLayout = Instance.new("UIGridLayout")
+UIGridLayout.CellSize = UDim2.new(0, 100, 0, 100)
+UIGridLayout.Parent = playerContainer
+
 for _, player in pairs(Players:GetPlayers()) do
     if player ~= Players.LocalPlayer then
-        module[playerCount] = {
-            Type = "Button",
-            Args = {player.Name, function(Self)
-                gotoPlayer(player)
-            end}
-        }
-        playerCount = playerCount + 1
-    end
-end
-
-_G.Modules[#_G.Modules + 1] = module
-return module
+        local playerButton = Instance.new("ImageButton")
+        playerButton.Name = player.Name
+        playerButton.Size = UDim2.new(0, 100, 0, 100)
+        playerButton.Image = getUserPFP(player.UserId)
+        playerButton.MouseButton1Click:Connect(function()
+            gotoPlayer(player)
+        end)
+        
+        local playerLabel = Instance.new("TextLabel")
+        playerLabel.Text = player.Name
+        playerLabel.Size = UDim2.new(1, 0, 0, 20)
+        playerLabel.Position = UDim2.new(0, 0, 1, -20)
+        playerLabel.BackgroundTransparency = 1
+        playerLabel```lua
