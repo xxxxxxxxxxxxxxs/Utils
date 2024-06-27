@@ -12,10 +12,10 @@ local iyflyspeed = 1
 local vehicleflyspeed = 1
 local IYMouse = Players.LocalPlayer:GetMouse()
 
--- Noclip variables
+
 local Clip = true
 local Noclipping = nil
-local floatName = "FloatingName" -- Replace with your specific float name if needed
+local floatName = "FloatingName" -
 
 local function getRoot(char)
     local rootPart = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
@@ -187,9 +187,9 @@ module[2] = {
 module[3] = {
     Type = "Input",
     Args = {
-        "Enter player's display name", -- Placeholder text
-        "Teleport", -- Button text
-        function(Self, text) -- text is the Input's value
+        "Enter player's name", 
+        "Teleport", 
+        function(Self, text)
             gotoPlayer(text)
         end
     }
