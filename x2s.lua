@@ -146,14 +146,19 @@ local function toggleNoclip()
     end
 end
 
-local function gotoPlayer(targetPlayer)
-    local character = targetPlayer.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        local targetPosition = character.HumanoidRootPart.Position
-        local playerCharacter = Players.LocalPlayer.Character
-        if playerCharacter and playerCharacter:FindFirstChild("HumanoidRootPart") then
-            playerCharacter.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 5, 0))
+local function gotoPlayer(targetPlayerName)
+    local targetPlayer = Players:FindFirstChild(targetPlayerName)
+    if targetPlayer then
+        local character = targetPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            local targetPosition = character.HumanoidRootPart.Position
+            local playerCharacter = Players.LocalPlayer.Character
+            if playerCharacter and playerCharacter:FindFirstChild("HumanoidRootPart") then
+                playerCharacter.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 5, 0))
+            end
         end
+    else
+        print("Player '" .. targetPlayerName .. "' not found.")
     end
 end
 
@@ -175,7 +180,27 @@ module[2] = {
     end}
 }
 
-local playerCount = 3
+module[3] = {
+    Type = "Button",
+    Args = {"Teleport to Player", function(Self)
+        -- Replace with your GUI handling code for showing input for player name
+        -- and triggering the teleportation function.
+        print("Teleport button clicked.")
+    end}
+}
+
+module[4] = {
+    Type = "Input",
+    Args = {
+        "Enter player's display name", -- Placeholder text
+        "Teleport", -- Button text
+        function(Self, text) -- text is the Input's value
+            gotoPlayer(text)
+        end
+    }
+}
+
+local playerCount = 5
 local playerButtons = {}
 
 -- Function to create a button for each player
@@ -183,7 +208,7 @@ local function createPlayerButton(player)
     return {
         Type = "Button",
         Args = {player.Name, function(Self)
-            gotoPlayer(player)
+            gotoPlayer(player.Name)
         end}
     }
 end
@@ -196,6 +221,8 @@ for _, player in pairs(Players:GetPlayers()) do
     end
 end
 
+_G.Modules = _G.Modules or {}
 _G.Modules[#_G.Modules + 1] = module
+
 return module
 
