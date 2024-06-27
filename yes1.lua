@@ -111,6 +111,18 @@ local function NOFLY()
     pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
 end
 
+local function Noclip()
+    local player = Players.LocalPlayer
+    local character = player.Character
+    if character then
+        for _, v in pairs(character:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.CanCollide = not v.CanCollide
+            end
+        end
+    end
+end
+
 local function gotoPlayer(targetPlayer)
     local character = targetPlayer.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
@@ -136,30 +148,31 @@ module[1] = {
 module[2] = {
     Type = "Button",
     Args = {"Noclip", function(Self)
-        local player = Players.LocalPlayer
-        local character = player.Character
-        if character then
-            for _, v in pairs(character:GetDescendants()) do
-                if v:IsA("BasePart") then
-                    v.CanCollide = not v.CanCollide
-                end
-            end
-        end
+        Noclip()
     end}
 }
 
 local playerCount = 3
+local playerButtons = {}
+
+-- Function to create a button for each player
+local function createPlayerButton(player)
+    return {
+        Type = "Button",
+        Args = {player.Name, function(Self)
+            gotoPlayer(player)
+        end}
+    }
+end
+
+-- Create initial buttons for current players
 for _, player in pairs(Players:GetPlayers()) do
     if player ~= Players.LocalPlayer then
-        module[playerCount] = {
-            Type = "Button",
-            Args = {player.Name, function(Self)
-                gotoPlayer(player)
-            end}
-        }
+        module[playerCount] = createPlayerButton(player)
         playerCount = playerCount + 1
     end
 end
 
 _G.Modules[#_G.Modules + 1] = module
 return module
+
