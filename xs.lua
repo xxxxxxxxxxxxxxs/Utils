@@ -158,8 +158,8 @@ local function gotoPlayer(targetPlayer)
 end
 
 module[1] = {
-    Type = "Button",
-    Args = {"Toggle Fly", function(Self)
+    Type = "Toggle",
+    Args = {"Fly", function(Self)
         if FLYING then
             NOFLY()
         else
@@ -169,7 +169,7 @@ module[1] = {
 }
 
 module[2] = {
-    Type = "Button",
+    Type = "Toggle",
     Args = {"Noclip", function(Self)
         toggleNoclip()
     end}
