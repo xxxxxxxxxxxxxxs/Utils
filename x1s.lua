@@ -158,21 +158,26 @@ local function gotoPlayer(targetPlayer)
 end
 
 module[1] = {
-    Type = "Toggle",
-    Args = {"Toggle Fly", function(Self)
-        if FLYING then
+    Type = "ButtonGrid",
+    Toggleable = false,
+    Args = {2, {
+        Noclip = function(Self)
+            toggleNoclip()
+        end,
+        Reclip = function(Self)
+            clip()
+        end,
+        Fly = function(Self)
+            if FLYING then
+                NOFLY()
+            else
+                sFLY()
+            end
+        end,
+        Unfly = function(Self)
             NOFLY()
-        else
-            sFLY()
-        end
-    end}
-}
-
-module[2] = {
-    Type = "Toggle",
-    Args = {"Noclip", function(Self)
-        toggleNoclip()
-    end}
+        end,
+    }}
 }
 
 local playerCount = 3
