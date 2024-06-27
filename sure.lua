@@ -12,6 +12,11 @@ local iyflyspeed = 1
 local vehicleflyspeed = 1
 local IYMouse = Players.LocalPlayer:GetMouse()
 
+-- Noclip variables
+local Clip = true
+local Noclipping = nil
+local floatName = "FloatingName" -- Replace with your specific float name if needed
+
 local function getRoot(char)
     local rootPart = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
     return rootPart
@@ -111,15 +116,33 @@ local function NOFLY()
     pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
 end
 
-local function Noclip()
-    local player = Players.LocalPlayer
-    local character = player.Character
-    if character then
-        for _, v in pairs(character:GetDescendants()) do
-            if v:IsA("BasePart") then
-                v.CanCollide = not v.CanCollide
+local function noclip()
+    Clip = false
+    wait(0.1)
+    local function NoclipLoop()
+        if Clip == false and Players.LocalPlayer.Character ~= nil then
+            for _, child in pairs(Players.LocalPlayer.Character:GetDescendants()) do
+                if child:IsA("BasePart") and child.CanCollide == true and child.Name ~= floatName then
+                    child.CanCollide = false
+                end
             end
         end
+    end
+    Noclipping = RunService.Stepped:Connect(NoclipLoop)
+end
+
+local function clip()
+    if Noclipping then
+        Noclipping:Disconnect()
+    end
+    Clip = true
+end
+
+local function toggleNoclip()
+    if Clip then
+        noclip()
+    else
+        clip()
     end
 end
 
@@ -148,7 +171,7 @@ module[1] = {
 module[2] = {
     Type = "Button",
     Args = {"Noclip", function(Self)
-        Noclip()
+        toggleNoclip()
     end}
 }
 
