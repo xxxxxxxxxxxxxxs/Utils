@@ -163,12 +163,8 @@ local function gotoPlayer(targetPlayerName)
 end
 
 
-module[1] = { 
-  Type = "Text",
-  Args = ["Shows a simple text"],
-}
 
-module[2] = {
+module[1] = {
     Type = "Toggle",
     Args = {"Fly", function(Self)
         if FLYING then
@@ -179,7 +175,7 @@ module[2] = {
     end}
 }
 
-module[3] = {
+module[2] = {
     Type = "Toggle",
     Args = {"Noclip", function(Self)
         toggleNoclip()
@@ -188,7 +184,7 @@ module[3] = {
 
 
 
-module[4] = {
+module[3] = {
     Type = "Input",
     Args = {
         "Enter player's display name", -- Placeholder text
