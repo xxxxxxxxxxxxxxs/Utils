@@ -203,23 +203,7 @@ module[4] = {
 local playerCount = 5
 local playerButtons = {}
 
--- Function to create a button for each player
-local function createPlayerButton(player)
-    return {
-        Type = "Button",
-        Args = {player.Name, function(Self)
-            gotoPlayer(player.Name)
-        end}
-    }
-end
 
--- Create initial buttons for current players
-for _, player in pairs(Players:GetPlayers()) do
-    if player ~= Players.LocalPlayer then
-        module[playerCount] = createPlayerButton(player)
-        playerCount = playerCount + 1
-    end
-end
 
 _G.Modules = _G.Modules or {}
 _G.Modules[#_G.Modules + 1] = module
