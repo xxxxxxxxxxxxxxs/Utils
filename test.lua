@@ -48,3 +48,4 @@ module[2] = {
 }
 
 _G.Modules[#_G.Modules + 1] = module
+return module
