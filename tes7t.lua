@@ -12,10 +12,11 @@ local iyflyspeed = 1
 local vehicleflyspeed = 1
 local IYMouse = Players.LocalPlayer:GetMouse()
 
-
 local Clip = true
 local Noclipping = nil
-local floatName = "FloatingName" -
+local floatName = "FloatingName"
+
+local warps = {}
 
 local function getRoot(char)
     local rootPart = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
@@ -146,23 +147,47 @@ local function toggleNoclip()
     end
 end
 
+local function setWarp(name)
+    local player = Players.LocalPlayer
+    local character = player.Character
+    if character and getRoot(character) then
+        warps[name] = getRoot(character).CFrame
+        print("Warp '" .. name .. "' set.")
+    else
+        print("Error: Could not set warp. Player or root part not found.")
+    end
+end
+
+local function gotoWarp(name)
+    local player = Players.LocalPlayer
+    local character = player.Character
+    if character and getRoot(character) then
+        if warps[name] then
+            getRoot(character).CFrame = warps[name]
+            print("Teleported to warp '" .. name .. "'.")
+        else
+            print("Error: Warp '" .. name .. "' not found.")
+        end
+    else
+        print("Error: Could not teleport. Player or root part not found.")
+    end
+end
+
 local function gotoPlayer(targetPlayerName)
     local targetPlayer = Players:FindFirstChild(targetPlayerName)
     if targetPlayer then
         local character = targetPlayer.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            local targetPosition = character.HumanoidRootPart.Position
+        if character and getRoot(character) then
+            local targetPosition = getRoot(character).Position
             local playerCharacter = Players.LocalPlayer.Character
-            if playerCharacter and playerCharacter:FindFirstChild("HumanoidRootPart") then
-                playerCharacter.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 5, 0))
+            if playerCharacter and getRoot(playerCharacter) then
+                getRoot(playerCharacter).CFrame = CFrame.new(targetPosition + Vector3.new(0, 5, 0))
             end
         end
     else
         print("Player '" .. targetPlayerName .. "' not found.")
     end
 end
-
-
 
 module[1] = {
     Type = "Toggle",
@@ -182,9 +207,29 @@ module[2] = {
     end}
 }
 
-
-
 module[3] = {
+    Type = "Input",
+    Args = {
+        "Enter warp name", 
+        "Set Warp", 
+        function(Self, text)
+            setWarp(text)
+        end
+    }
+}
+
+module[4] = {
+    Type = "Input",
+    Args = {
+        "Enter warp name", 
+        "Teleport to Warp", 
+        function(Self, text)
+            gotoWarp(text)
+        end
+    }
+}
+
+module[5] = {
     Type = "Input",
     Args = {
         "Enter player's name", 
@@ -194,57 +239,6 @@ module[3] = {
         end
     }
 }
-
-local playerCount = 5
-local playerButtons = {}
-
-
-local warps = {}
-
-local function setWarp(name)
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        warps[name] = character.HumanoidRootPart.CFrame
-        print("Warp '" .. name .. "' set.")
-    else
-        print("Error: Could not set warp. Player or HumanoidRootPart not found.")
-    end
-end
-
-local function gotoWarp(name)
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        if warps[name] then
-            character.HumanoidRootPart.CFrame = warps[name]
-            print("Teleported to warp '" .. name .. "'.")
-        else
-            print("Error: Warp '" .. name .. "' not found.")
-        end
-    else
-        print("Error: Could not teleport. Player or HumanoidRootPart not found.")
-    end
-end
-
-module[3] = {
-  Type = "Input",
-  Args = {"Enter warp name", "Set Warp", function(Self, text) -- text is the Input's value
-      setWarp(text)
-    end
-  }
-}
-
-module[4] = {
-  Type = "Input",
-  Args = {"Enter warp name", "Go to Warp", function(Self, text) -- text is the Input's value
-      gotoWarp(text)
-    end
-  }
-}
-
-
-
 
 _G.Modules = _G.Modules or {}
 _G.Modules[#_G.Modules + 1] = module
