@@ -3,6 +3,7 @@ local module = {}
 module["Name"] = "Xs's Utilities"
 
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local FLYING = false
@@ -110,55 +111,16 @@ local function NOFLY()
     pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
 end
 
-local function toggleNoclip()
-    local player = Players.LocalPlayer
-    local character = player.Character
-    if character then
-        for _, v in pairs(character:GetDescendants()) do
-            if v:IsA("BasePart") then
-                v.CanCollide = not v.CanCollide
-            end
+local function gotoPlayer(targetPlayer)
+    local character = targetPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local targetPosition = character.HumanoidRootPart.Position
+        local playerCharacter = Players.LocalPlayer.Character
+        if playerCharacter and playerCharacter:FindFirstChild("HumanoidRootPart") then
+            playerCharacter.HumanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 5, 0))
         end
     end
 end
-
-local function removePlayerName(playerName)
-    -- Logic to remove playerName from UI or list where names are displayed
-    -- Example: Remove playerName from a UI list or table
-end
-
-Players.PlayerRemoving:Connect(function(player)
-    local playerName = player.Name
-    removePlayerName(playerName)
-end)
-
-Players.PlayerAdded:Connect(function(player)
-    local playerName = player.Name
-    -- Add playerName to the UI or list where names are displayed
-    -- Example: Append playerName to a UI list or table
-end)
-
-local function loadCommands()
-    local url = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"
-    local success, content = pcall(function()
-        return game:HttpGet(url)
-    end)
-    
-    if success and content then
-        local chunk = loadstring(content)
-        if chunk then
-            setfenv(chunk, {})
-            chunk()
-            print("Infinite Yield commands loaded successfully.")
-        else
-            warn("Failed to load Infinite Yield commands.")
-        end
-    else
-        warn("Failed to fetch Infinite Yield commands from server.")
-    end
-end
-
-loadCommands()
 
 module[1] = {
     Type = "Button",
@@ -173,11 +135,31 @@ module[1] = {
 
 module[2] = {
     Type = "Button",
-    Args = {"Toggle Noclip", function(Self)
-        toggleNoclip()
+    Args = {"Noclip", function(Self)
+        local player = Players.LocalPlayer
+        local character = player.Character
+        if character then
+            for _, v in pairs(character:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = not v.CanCollide
+                end
+            end
+        end
     end}
 }
 
--- Additional buttons or functionalities can be added similarly
+local playerCount = 3
+for _, player in pairs(Players:GetPlayers()) do
+    if player ~= Players.LocalPlayer then
+        module[playerCount] = {
+            Type = "Button",
+            Args = {player.Name, function(Self)
+                gotoPlayer(player)
+            end}
+        }
+        playerCount = playerCount + 1
+    end
+end
 
+_G.Modules[#_G.Modules + 1] = module
 return module
