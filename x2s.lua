@@ -162,7 +162,13 @@ local function gotoPlayer(targetPlayerName)
     end
 end
 
-module[1] = {
+
+module[1] = { 
+  Type = "Text",
+  Args = ["Shows a simple text"],
+}
+
+module[2] = {
     Type = "Toggle",
     Args = {"Fly", function(Self)
         if FLYING then
@@ -173,21 +179,14 @@ module[1] = {
     end}
 }
 
-module[2] = {
+module[3] = {
     Type = "Toggle",
     Args = {"Noclip", function(Self)
         toggleNoclip()
     end}
 }
 
-module[3] = {
-    Type = "Button",
-    Args = {"Teleport to Player", function(Self)
-        -- Replace with your GUI handling code for showing input for player name
-        -- and triggering the teleportation function.
-        print("Teleport button clicked.")
-    end}
-}
+
 
 module[4] = {
     Type = "Input",
