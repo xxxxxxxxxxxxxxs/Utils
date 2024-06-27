@@ -181,7 +181,8 @@ local playerButtons = {}
 -- Function to create a button for each player
 local function createPlayerButton(player)
     return {
-        Type = "Button",
+        Type = "ButtonGrid",
+        Toggleable = false,
         Args = {player.Name, function(Self)
             gotoPlayer(player)
         end}
