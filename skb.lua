@@ -182,12 +182,12 @@ local playerButtons = {}
 local function createPlayerButton(player)
     return {
         Type = "ButtonGrid",
-        Toggleable = false,
-        Args = {player.Name, function(Self)
+        Args = {3, {player.Name, function(Self)
             gotoPlayer(player)
         end}
     }
 end
+
 
 -- Create initial buttons for current players
 for _, player in pairs(Players:GetPlayers()) do
