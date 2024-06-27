@@ -158,26 +158,21 @@ local function gotoPlayer(targetPlayer)
 end
 
 module[1] = {
-    Type = "ButtonGrid",
-    Toggleable = false,
-    Args = {2, {
-        Noclip = function(Self)
-            toggleNoclip()
-        end,
-        Reclip = function(Self)
-            clip()
-        end,
-        Fly = function(Self)
-            if FLYING then
-                NOFLY()
-            else
-                sFLY()
-            end
-        end,
-        Unfly = function(Self)
+    Type = "Button",
+    Args = {"Toggle Fly", function(Self)
+        if FLYING then
             NOFLY()
-        end,
-    }}
+        else
+            sFLY()
+        end
+    end}
+}
+
+module[2] = {
+    Type = "Button",
+    Args = {"Noclip", function(Self)
+        toggleNoclip()
+    end}
 }
 
 local playerCount = 3
@@ -192,7 +187,6 @@ local function createPlayerButton(player)
         end}
     }
 end
-
 
 -- Create initial buttons for current players
 for _, player in pairs(Players:GetPlayers()) do
