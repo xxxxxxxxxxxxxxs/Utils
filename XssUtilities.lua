@@ -2,21 +2,29 @@ local module = {}
 
 module["Name"] = "Xs's Utilities"
 
+-- Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
+-- Fly variables
 local FLYING = false
 local QEfly = true
 local iyflyspeed = 1
 local vehicleflyspeed = 1
 local IYMouse = Players.LocalPlayer:GetMouse()
 
+-- Noclip variables
 local Clip = true
 local Noclipping = nil
 local floatName = "FloatingName"
 
+-- Warp variables
 local warps = {}
+
+-- Fling variables
+local hiddenfling = false
+local oldCFrame
 
 local function getRoot(char)
     local rootPart = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
@@ -189,6 +197,48 @@ local function gotoPlayer(targetPlayerName)
     end
 end
 
+-- Function to toggle the fling behavior
+local function toggleFling()
+    hiddenfling = not hiddenfling
+    if hiddenfling then
+        -- Save the initial position of the player
+        oldCFrame = Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+
+        -- Function to perform the fling repeatedly while fling is active
+        local function fling()
+            local hrp, c, vel, movel = nil, nil, nil, 0.1
+            while hiddenfling do
+                RunService.Heartbeat:Wait()
+                local lp = Players.LocalPlayer
+                while hiddenfling and not (c and c.Parent and hrp and hrp.Parent) do
+                    RunService.Heartbeat:Wait()
+                    c = lp.Character
+                    hrp = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso") or c:FindFirstChild("UpperTorso")
+                end
+                if hiddenfling then
+                    -- Fling logic
+                    vel = hrp.Velocity
+                    hrp.Velocity = vel * 10000 + Vector3.new(0, 10000, 0)
+                    RunService.RenderStepped:Wait()
+                    if c and c.Parent and hrp and hrp.Parent then
+                        hrp.Velocity = vel
+                    end
+                    RunService.Stepped:Wait()
+                    if c and c.Parent and hrp and hrp.Parent then
+                        hrp.Velocity = vel + Vector3.new(0, movel, 0)
+                        movel = movel * -1
+                    end
+                end
+            end
+        end
+        -- Start the fling function
+        fling()
+    else
+        -- Restore the player to their original position
+        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = oldCFrame
+    end
+end
+
 module[1] = {
     Type = "Toggle",
     Args = {"Fly", function(Self)
@@ -240,7 +290,15 @@ module[5] = {
     }
 }
 
+module[6] = {
+    Type = "Toggle",
+    Args = {"Fling", function(Self)
+        toggleFling()
+    end}
+}
+
 _G.Modules = _G.Modules or {}
 _G.Modules[#_G.Modules + 1] = module
 
 return module
+
