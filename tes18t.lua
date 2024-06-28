@@ -53,7 +53,7 @@ local function toggleFling()
 end
 
 -- Custom UI Elements
-module[5] = {
+module[1] = {
     Type = "Toggle",
     Args = {"Fling", function(self, state)
         toggleFling()
