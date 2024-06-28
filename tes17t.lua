@@ -10,7 +10,7 @@ module[1] = {
     local LocalPlayer = Players.LocalPlayer
 
     local oldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
-    local Target = getPlr("all")  -- Adjust as needed to get the player(s) to fling
+    local Target = "all"  -- Adjust as needed to get the player(s) to fling
 
     local hiddenFling = true
 
