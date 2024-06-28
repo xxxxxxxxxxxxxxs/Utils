@@ -1,21 +1,24 @@
 local module = {}
 
+-- Module metadata
 module["Name"] = "Xs's Utilities"
 
+-- Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
 
+-- State variables
 local hiddenfling = false
 local oldCFrame
 
-local warps = {}
-
+-- Function to toggle the fling behavior
 local function toggleFling()
     hiddenfling = not hiddenfling
     if hiddenfling then
+        -- Save the initial position of the player
         oldCFrame = Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 
+        -- Function to perform the fling repeatedly while fling is active
         local function fling()
             local hrp, c, vel, movel = nil, nil, nil, 0.1
             while hiddenfling do
@@ -27,6 +30,7 @@ local function toggleFling()
                     hrp = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso") or c:FindFirstChild("UpperTorso")
                 end
                 if hiddenfling then
+                    -- Fling logic
                     vel = hrp.Velocity
                     hrp.Velocity = vel * 10000 + Vector3.new(0, 10000, 0)
                     RunService.RenderStepped:Wait()
@@ -41,24 +45,21 @@ local function toggleFling()
                 end
             end
         end
+        -- Start the fling function
         fling()
     else
+        -- Restore the player to their original position
         Players.LocalPlayer.Character.HumanoidRootPart.CFrame = oldCFrame
     end
 end
 
--- UI Setup
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game.CoreGui
+-- Custom UI Elements
+module[5] = {
+    Type = "Toggle",
+    Args = {"Fling", function(self, state)
+        toggleFling()
+    end}
+}
 
-local buttonFling = Instance.new("TextButton")
-buttonFling.Size = UDim2.new(0, 100, 0, 50)
-buttonFling.Position = UDim2.new(0, 10, 0, 10)
-buttonFling.Text = "Fling"
-buttonFling.Parent = ScreenGui
-
-buttonFling.MouseButton1Click:Connect(function()
-    toggleFling()
-end)
-
+-- Return the module table
 return module
