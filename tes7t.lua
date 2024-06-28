@@ -11,10 +11,11 @@ local QEfly = true
 local iyflyspeed = 1
 local vehicleflyspeed = 1
 local IYMouse = Players.LocalPlayer:GetMouse()
-
 local Clip = true
 local Noclipping = nil
 local floatName = "FloatingName"
+local hiddenfling = false
+local oldCFrame
 
 local warps = {}
 
@@ -150,187 +151,105 @@ end
 local function setWarp(name)
     local player = Players.LocalPlayer
     local character = player.Character
-    if character and getRoot(character) then
-        warps[name] = getRoot(character).CFrame
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        warps[name] = character.HumanoidRootPart.CFrame
         print("Warp '" .. name .. "' set.")
     else
-        print("Error: Could not set warp. Player or root part not found.")
+        print("Error: Could not set warp. Player or HumanoidRootPart not found.")
     end
 end
 
 local function gotoWarp(name)
     local player = Players.LocalPlayer
     local character = player.Character
-    if character and getRoot(character) then
+    if character and character:FindFirstChild("HumanoidRootPart") then
         if warps[name] then
-            getRoot(character).CFrame = warps[name]
+            character.HumanoidRootPart.CFrame = warps[name]
             print("Teleported to warp '" .. name .. "'.")
         else
             print("Error: Warp '" .. name .. "' not found.")
         end
     else
-        print("Error: Could not teleport. Player or root part not found.")
+        print("Error: Could not teleport. Player or HumanoidRootPart not found.")
     end
 end
 
-local function gotoPlayer(targetPlayerName)
-    local targetPlayer = Players:FindFirstChild(targetPlayerName)
-    if targetPlayer then
-        local character = targetPlayer.Character
-        if character and getRoot(character) then
-            local targetPosition = getRoot(character).Position
-            local playerCharacter = Players.LocalPlayer.Character
-            if playerCharacter and getRoot(playerCharacter) then
-                getRoot(playerCharacter).CFrame = CFrame.new(targetPosition + Vector3.new(0, 5, 0))
-            end
-        end
-    else
-        print("Player '" .. targetPlayerName .. "' not found.")
-    end
-end
+local function toggleFling()
+    hiddenfling = not hiddenfling
+    if hiddenfling then
+        oldCFrame = Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 
-local function flingPlayer(targetPlayerName)
-    local oldCFrame = Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-    local targetPlayer = Players:FindFirstChild(targetPlayerName)
-
-    if not targetPlayer then
-        print("Player '" .. targetPlayerName .. "' not found.")
-        return
-    end
-
-    local targetCharacter = targetPlayer.Character
-    if not targetCharacter then
-        print("Target player's character not found.")
-        return
-    end
-
-    local targetHRP = targetCharacter:FindFirstChild("HumanoidRootPart")
-    if not targetHRP then
-        print("Target player's HumanoidRootPart not found.")
-        return
-    end
-
-    hiddenfling = true
-
-    if game:GetService("ReplicatedStorage"):FindFirstChild("juisdfj0i32i0eidsuf0iok") then
-        hiddenfling = true
-    else
-        local detection = Instance.new("Decal")
-        detection.Name = "juisdfj0i32i0eidsuf0iok"
-        detection.Parent = game:GetService("ReplicatedStorage")
         local function fling()
             local hrp, c, vel, movel = nil, nil, nil, 0.1
-            while true do
+            while hiddenfling do
                 RunService.Heartbeat:Wait()
+                local lp = Players.LocalPlayer
+                while hiddenfling and not (c and c.Parent and hrp and hrp.Parent) do
+                    RunService.Heartbeat:Wait()
+                    c = lp.Character
+                    hrp = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso") or c:FindFirstChild("UpperTorso")
+                end
                 if hiddenfling then
-                    local lp = Players.LocalPlayer
-                    while hiddenfling and not (c and c.Parent and hrp and hrp.Parent) do
-                        RunService.Heartbeat:Wait()
-                        c = lp.Character
-                        hrp = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso") or c:FindFirstChild("UpperTorso")
+                    vel = hrp.Velocity
+                    hrp.Velocity = vel * 10000 + Vector3.new(0, 10000, 0)
+                    RunService.RenderStepped:Wait()
+                    if c and c.Parent and hrp and hrp.Parent then
+                        hrp.Velocity = vel
                     end
-                    if hiddenfling then
-                        vel = hrp.Velocity
-                        hrp.Velocity = vel * 10000 + Vector3.new(0, 10000, 0)
-                        RunService.RenderStepped:Wait()
-                        if c and c.Parent and hrp and hrp.Parent then
-                            hrp.Velocity = vel
-                        end
-                        RunService.Stepped:Wait()
-                        if c and c.Parent and hrp and hrp.Parent then
-                            hrp.Velocity = vel + Vector3.new(0, movel, 0)
-                            movel = movel * -1
-                        end
+                    RunService.Stepped:Wait()
+                    if c and c.Parent and hrp and hrp.Parent then
+                        hrp.Velocity = vel + Vector3.new(0, movel, 0)
+                        movel = movel * -1
                     end
                 end
             end
         end
         fling()
+    else
+        Players.LocalPlayer.Character.HumanoidRootPart.CFrame = oldCFrame
     end
-
-    local playerCharacter = Players.LocalPlayer.Character
-    local playerHRP = getRoot(playerCharacter)
-    playerCharacter.Humanoid:SetStateEnabled("Seated", false)
-    playerCharacter.Humanoid.Sit = true
-
-    for i = 1, 10 do
-        wait(0.017)
-        playerHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 4)
-        wait(0.01)
-        playerHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -2)
-        wait(0.01)
-        playerHRP.CFrame = targetHRP.CFrame
-        wait(0.01)
-        playerHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -3)
-        wait(0.01)
-        playerHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
-        wait(0.01)
-        playerHRP.CFrame = targetHRP.CFrame
-        wait(0.01)
-        playerHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -1)
-        wait(0.01)
-        playerHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -1)
-    end
-
-    sFLY(true)
-    wait(0.3)
-    playerHRP.CFrame = oldCFrame
-    wait(0.13)
-    playerCharacter.Humanoid:SetStateEnabled("Seated", true)
-    playerCharacter.Humanoid.Sit = false
-    FLYING = false
-    playerCharacter.Humanoid.PlatformStand = false
-    hiddenfling = false
 end
 
-module[1] = {
-    Type = "Button",
-    Args = {"Toggle Fly", function()
-        if FLYING then
-            NOFLY()
-        else
-            sFLY()
-        end
-    end}
-}
+-- UI Setup
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.CoreGui
 
-module[2] = {
-    Type = "Button",
-    Args = {"Toggle Noclip", function()
-        toggleNoclip()
-    end}
-}
+local buttonFly = Instance.new("TextButton")
+buttonFly.Size = UDim2.new(0, 100, 0, 50)
+buttonFly.Position = UDim2.new(0, 10, 0, 10)
+buttonFly.Text = "Fly"
+buttonFly.Parent = ScreenGui
 
-module[3] = {
-    Type = "Input",
-    Args = {"Enter warp name", "Set Warp", function(Self, text)
-        setWarp(text)
-    end}
-}
+local buttonNoclip = Instance.new("TextButton")
+buttonNoclip.Size = UDim2.new(0, 100, 0, 50)
+buttonNoclip.Position = UDim2.new(0, 120, 0, 10)
+buttonNoclip.Text = "Noclip"
+buttonNoclip.Parent = ScreenGui
 
-module[4] = {
-    Type = "Input",
-    Args = {"Enter warp name", "Teleport to Warp", function(Self, text)
-        gotoWarp(text)
-    end}
-}
+local buttonFling = Instance.new("TextButton")
+buttonFling.Size = UDim2.new(0, 100, 0, 50)
+buttonFling.Position = UDim2.new(0, 230, 0, 10)
+buttonFling.Text = "Fling"
+buttonFling.Parent = ScreenGui
 
-module[5] = {
-    Type = "Input",
-    Args = {"Enter player's name", "Teleport", function(Self, text)
-        gotoPlayer(text)
-    end}
-}
+local flying = false
+buttonFly.MouseButton1Click:Connect(function()
+    if flying then
+        NOFLY()
+    else
+        sFLY(false)
+    end
+    flying = not flying
+end)
 
-module[6] = {
-    Type = "Input",
-    Args = {"Enter player's name", "Fling Player", function(Self, text)
-        flingPlayer(text)
-    end}
-}
+local noclipping = false
+buttonNoclip.MouseButton1Click:Connect(function()
+    toggleNoclip()
+    noclipping = not noclipping
+end)
 
-_G.Modules = _G.Modules or {}
-_G.Modules[#_G.Modules + 1] = module
+buttonFling.MouseButton1Click:Connect(function()
+    toggleFling()
+end)
 
 return module
-
