@@ -1,5 +1,5 @@
 local module = {}
-
+module["gameId"] = 0 -- Restrict module to a certain game ID only. 0 allows all games
 module["Name"] = "Xs's Utilities"
 
 local Players = game:GetService("Players")
@@ -210,46 +210,66 @@ local function toggleFling()
     end
 end
 
+-- Button modules setup
+module[1] = {
+    Type = "Button",
+    Args = {"Fly", function(Self)
+        local flying = false
+        if flying then
+            NOFLY()
+        else
+            sFLY(false)
+        end
+        flying = not flying
+    end}
+}
+
+module[2] = {
+    Type = "Button",
+    Args = {"Noclip", function(Self)
+        toggleNoclip()
+    end}
+}
+
+module[3] = {
+    Type = "Button",
+    Args = {"Fling", function(Self)
+        toggleFling()
+    end}
+}
+
 -- UI Setup
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Parent = game.CoreGui
 
-local buttonFly = Instance.new("TextButton")
-buttonFly.Size = UDim2.new(0, 100, 0, 50)
-buttonFly.Position = UDim2.new(0, 10, 0, 10)
-buttonFly.Text = "Fly"
-buttonFly.Parent = ScreenGui
+local buttonContainer = Instance.new("Frame")
+buttonContainer.Size = UDim2.new(0, 360, 0, 70)
+buttonContainer.Position = UDim2.new(0.5, -180, 0, 10)
+buttonContainer.BackgroundTransparency = 1
+buttonContainer.Parent = ScreenGui
 
-local buttonNoclip = Instance.new("TextButton")
-buttonNoclip.Size = UDim2.new(0, 100, 0, 50)
-buttonNoclip.Position = UDim2.new(0, 120, 0, 10)
-buttonNoclip.Text = "Noclip"
-buttonNoclip.Parent = ScreenGui
+-- Function to create buttons based on module structure
+local function createModuleButtons()
+    for _, mod in ipairs(module) do
+        if mod.Type == "Button" then
+            local buttonName = mod.Args[1]
+            local callback = mod.Args[2]
 
-local buttonFling = Instance.new("TextButton")
-buttonFling.Size = UDim2.new(0, 100, 0, 50)
-buttonFling.Position = UDim2.new(0, 230, 0, 10)
-buttonFling.Text = "Fling"
-buttonFling.Parent = ScreenGui
+            local button = Instance.new("TextButton")
+            button.Size = UDim2.new(0, 100, 0, 50)
+            button.Position = UDim2.new(0, 10 + (120 * (#buttonContainer:GetChildren() - 1)), 0, 10)
+            button.Text = buttonName
+            button.Parent = buttonContainer
 
-local flying = false
-buttonFly.MouseButton1Click:Connect(function()
-    if flying then
-        NOFLY()
-    else
-        sFLY(false)
+            button.MouseButton1Click:Connect(function()
+                callback(button)
+            end)
+        end
     end
-    flying = not flying
-end)
+end
 
-local noclipping = false
-buttonNoclip.MouseButton1Click:Connect(function()
-    toggleNoclip()
-    noclipping = not noclipping
-end)
-
-buttonFling.MouseButton1Click:Connect(function()
-    toggleFling()
-end)
+-- Call the function to create buttons
+createModuleButtons()
 
 return module
+
