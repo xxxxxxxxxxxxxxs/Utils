@@ -107,7 +107,6 @@ module[1] = {
   end
 }
 
-
-
-return module
-
+-- Add the module to _G.Modules
+_G.Modules = _G.Modules or {}
+table.insert(_G.Modules, module)
