@@ -189,9 +189,103 @@ local function gotoPlayer(targetPlayerName)
     end
 end
 
+local function flingPlayer(targetPlayerName)
+    local oldCFrame = Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+    local targetPlayer = Players:FindFirstChild(targetPlayerName)
+
+    if not targetPlayer then
+        print("Player '" .. targetPlayerName .. "' not found.")
+        return
+    end
+
+    local targetCharacter = targetPlayer.Character
+    if not targetCharacter then
+        print("Target player's character not found.")
+        return
+    end
+
+    local targetHRP = targetCharacter:FindFirstChild("HumanoidRootPart")
+    if not targetHRP then
+        print("Target player's HumanoidRootPart not found.")
+        return
+    end
+
+    hiddenfling = true
+
+    if game:GetService("ReplicatedStorage"):FindFirstChild("juisdfj0i32i0eidsuf0iok") then
+        hiddenfling = true
+    else
+        local detection = Instance.new("Decal")
+        detection.Name = "juisdfj0i32i0eidsuf0iok"
+        detection.Parent = game:GetService("ReplicatedStorage")
+        local function fling()
+            local hrp, c, vel, movel = nil, nil, nil, 0.1
+            while true do
+                RunService.Heartbeat:Wait()
+                if hiddenfling then
+                    local lp = Players.LocalPlayer
+                    while hiddenfling and not (c and c.Parent and hrp and hrp.Parent) do
+                        RunService.Heartbeat:Wait()
+                        c = lp.Character
+                        hrp = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso") or c:FindFirstChild("UpperTorso")
+                    end
+                    if hiddenfling then
+                        vel = hrp.Velocity
+                        hrp.Velocity = vel * 10000 + Vector3.new(0, 10000, 0)
+                        RunService.RenderStepped:Wait()
+                        if c and c.Parent and hrp and hrp.Parent then
+                            hrp.Velocity = vel
+                        end
+                        RunService.Stepped:Wait()
+                        if c and c.Parent and hrp and hrp.Parent then
+                            hrp.Velocity = vel + Vector3.new(0, movel, 0)
+                            movel = movel * -1
+                        end
+                    end
+                end
+            end
+        end
+        fling()
+    end
+
+    local playerCharacter = Players.LocalPlayer.Character
+    local playerHRP = getRoot(playerCharacter)
+    playerCharacter.Humanoid:SetStateEnabled("Seated", false)
+    playerCharacter.Humanoid.Sit = true
+
+    for i = 1, 10 do
+        wait(0.017)
+        playerHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 4)
+        wait(0.01)
+        playerHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -2)
+        wait(0.01)
+        playerHRP.CFrame = targetHRP.CFrame
+        wait(0.01)
+        playerHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -3)
+        wait(0.01)
+        playerHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
+        wait(0.01)
+        playerHRP.CFrame = targetHRP.CFrame
+        wait(0.01)
+        playerHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -1)
+        wait(0.01)
+        playerHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -1)
+    end
+
+    sFLY(true)
+    wait(0.3)
+    playerHRP.CFrame = oldCFrame
+    wait(0.13)
+    playerCharacter.Humanoid:SetStateEnabled("Seated", true)
+    playerCharacter.Humanoid.Sit = false
+    FLYING = false
+    playerCharacter.Humanoid.PlatformStand = false
+    hiddenfling = false
+end
+
 module[1] = {
-    Type = "Toggle",
-    Args = {"Fly", function(Self)
+    Type = "Button",
+    Args = {"Toggle Fly", function()
         if FLYING then
             NOFLY()
         else
@@ -201,46 +295,42 @@ module[1] = {
 }
 
 module[2] = {
-    Type = "Toggle",
-    Args = {"Noclip", function(Self)
+    Type = "Button",
+    Args = {"Toggle Noclip", function()
         toggleNoclip()
     end}
 }
 
 module[3] = {
     Type = "Input",
-    Args = {
-        "Enter warp name", 
-        "Set Warp", 
-        function(Self, text)
-            setWarp(text)
-        end
-    }
+    Args = {"Enter warp name", "Set Warp", function(Self, text)
+        setWarp(text)
+    end}
 }
 
 module[4] = {
     Type = "Input",
-    Args = {
-        "Enter warp name", 
-        "Teleport to Warp", 
-        function(Self, text)
-            gotoWarp(text)
-        end
-    }
+    Args = {"Enter warp name", "Teleport to Warp", function(Self, text)
+        gotoWarp(text)
+    end}
 }
 
 module[5] = {
     Type = "Input",
-    Args = {
-        "Enter player's name", 
-        "Teleport", 
-        function(Self, text)
-            gotoPlayer(text)
-        end
-    }
+    Args = {"Enter player's name", "Teleport", function(Self, text)
+        gotoPlayer(text)
+    end}
+}
+
+module[6] = {
+    Type = "Input",
+    Args = {"Enter player's name", "Fling Player", function(Self, text)
+        flingPlayer(text)
+    end}
 }
 
 _G.Modules = _G.Modules or {}
 _G.Modules[#_G.Modules + 1] = module
 
 return module
+
