@@ -1,6 +1,5 @@
 local module = {}
-
--- Module metadata
+module["gameId"] = 0 -- Restrict module to a certain game ID only. 0 allows all games
 module["Name"] = "Xs's Utilities"
 
 -- Services
@@ -60,6 +59,9 @@ module[5] = {
         toggleFling()
     end}
 }
+
+_G.Modules = _G.Modules or {}
+_G.Modules[#_G.Modules + 1] = module
 
 -- Return the module table
 return module
