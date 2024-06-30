@@ -368,3 +368,4 @@ module["Name"] = "Universal"
 	--}
 	
 	_G.Modules[1] = module
+return module
