@@ -1,3 +1,4 @@
+local module = {}
 module["Name"] = "Universal"
 	
 	local ts = game:GetService("TweenService")
